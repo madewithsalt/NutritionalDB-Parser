@@ -38,16 +38,14 @@ class Parser
 
   def sort_file_data(file_name)
     format = @format.get_format_hash
-    # get the corresponding data hash object, which should be named after the DB file.
+    # get the corresponding data hash object symbol, which should be named after the DB file in lowercase.
     format_sym_name = File.basename(file_name, File.extname(file_name)).to_s.downcase
     format_array =  format.fetch(format_sym_name.to_sym)
     format_folder = File.basename(file_name, File.extname(file_name))
     target_dir = '../output/'+ format_folder
 
     if Dir.exist?(target_dir) == FALSE
-      entry_dir = Dir.mkdir(target_dir, 0755)
-    else
-      entry_dir = target_dir
+      Dir.mkdir(target_dir, 0755)
     end
 
     puts "Sorting file data to folder #{format_folder}..."
@@ -55,6 +53,9 @@ class Parser
     #TODO: Make test for format.has_key?(targetData.to_sym)
     counter = 0
     while (line = @source_file.gets)
+      # CURRENTLY, This saves each line of the ASCII database into it's own file, inside a
+      # Folder named after the original file. This is crappy and outputs a TON of files,
+      # But appeared to be the best way to import the db into Mongo. Still a WIP.
       counter = counter+1
       entry_obj = {}
       line = line.gsub(/~/, '')
@@ -78,5 +79,6 @@ class Parser
   end
 end
 
+#TO USE: pass the parser file an argument. Currently assumes your file is in the "../src/" dir.
+# TODO: Make the input and output locations more flexible.
 parser = Parser.new(ARGV[0])
-#parser = Parser.new("DATA_SRC.txt")
